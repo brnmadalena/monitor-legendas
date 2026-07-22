@@ -2,18 +2,16 @@ package com.brunomadalena.monitorlegendas
 
 import android.content.Context
 import android.content.SharedPreferences
+import org.json.JSONArray
+import org.json.JSONObject
 
-/**
- * Guarda a lista de títulos que o usuário quer acompanhar,
- * e o histórico de itens já vistos (pra não avisar duas vezes
- * da mesma coisa).
- */
 object WatchlistStore {
 
     private const val PREFS_NAME = "monitor_legendas_prefs"
     private const val KEY_WATCHLIST = "watchlist"
-    private const val KEY_SEEN_IDS = "seen_ids"
+    private const val KEY_SEEN_ITEMS_JSON = "seen_items_json"
     private const val KEY_HAS_RUN_BEFORE = "has_run_before"
+    private const val MAX_ITENS_GUARDADOS = 3000
 
     private fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -40,16 +38,55 @@ object WatchlistStore {
         prefs(context).edit().putStringSet(KEY_WATCHLIST, atual).apply()
     }
 
-    fun getSeenIds(context: Context): MutableSet<String> {
-        return prefs(context).getStringSet(KEY_SEEN_IDS, emptySet())?.toMutableSet()
-            ?: mutableSetOf()
+    fun getSeenItems(context: Context): List<ItemEncontrado> {
+        val json = prefs(context).getString(KEY_SEEN_ITEMS_JSON, null) ?: return emptyList()
+        val itens = mutableListOf<ItemEncontrado>()
+        try {
+            val arr = JSONArray(json)
+            for (i in 0 until arr.length()) {
+                val o = arr.getJSONObject(i)
+                itens.add(
+                    ItemEncontrado(
+                        id = o.getString("id"),
+                        titulo = o.getString("titulo"),
+                        site = o.getString("site"),
+                        url = o.getString("url")
+                    )
+                )
+            }
+        } catch (e: Exception) {
+        }
+        return itens
     }
 
-    fun saveSeenIds(context: Context, ids: Set<String>) {
-        // SharedPreferences com StringSet tem limite prático; mantemos só os
-        // últimos 3000 ids pra não crescer pra sempre.
-        val limitado = if (ids.size > 3000) ids.toList().takeLast(3000).toSet() else ids
-        prefs(context).edit().putStringSet(KEY_SEEN_IDS, limitado).apply()
+    fun getSeenIds(context: Context): Set<String> =
+        getSeenItems(context).map { it.id }.toSet()
+
+    fun addSeenItems(context: Context, novosItens: List<ItemEncontrado>) {
+        if (novosItens.isEmpty()) return
+        val atuais = getSeenItems(context).toMutableList()
+        val idsExistentes = atuais.map { it.id }.toMutableSet()
+        for (item in novosItens) {
+            if (idsExistentes.add(item.id)) {
+                atuais.add(item)
+            }
+        }
+        val limitado = if (atuais.size > MAX_ITENS_GUARDADOS) {
+            atuais.takeLast(MAX_ITENS_GUARDADOS)
+        } else {
+            atuais
+        }
+
+        val arr = JSONArray()
+        for (item in limitado) {
+            val o = JSONObject()
+            o.put("id", item.id)
+            o.put("titulo", item.titulo)
+            o.put("site", item.site)
+            o.put("url", item.url)
+            arr.put(o)
+        }
+        prefs(context).edit().putString(KEY_SEEN_ITEMS_JSON, arr.toString()).apply()
     }
 
     fun hasRunBefore(context: Context): Boolean =
