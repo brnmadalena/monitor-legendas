@@ -1,0 +1,88 @@
+MONITOR DE LEGENDAS — APP DE ANDROID
+========================================
+
+O QUE O APP FAZ
+------------------------------------------------
+- Você abre o app e escreve o nome do filme/série direto na tela.
+- Ele verifica sozinho, a cada 30 minutos, se saiu legenda nova
+  desses títulos nos sites Addic7ed, Subdl e OpenSubtitles
+  (do uploader "LosChulosTeam").
+- Quando encontra algo, manda uma notificação no celular.
+- Tudo fica salvo no próprio celular — não depende do PC ligado.
+
+Eu escrevi todo o código do app, mas não consigo gerar o arquivo
+.apk final aqui (isso exige as ferramentas oficiais do Google, que
+não tenho acesso). Por isso vamos usar o GitHub Actions: um serviço
+gratuito que compila o app pra você, automaticamente, na nuvem.
+
+PASSO 1 — Criar conta no GitHub (se não tiver)
+------------------------------------------------
+Acesse https://github.com/signup e crie uma conta gratuita.
+
+PASSO 2 — Criar um repositório novo
+------------------------------------------------
+1. Clique no "+" no canto superior direito > "New repository"
+2. Nome: monitor-legendas (ou o que preferir)
+3. Deixe como "Public" ou "Private", tanto faz
+4. NÃO marque nenhuma opção de criar README/gitignore automático
+5. Clique em "Create repository"
+
+PASSO 3 — Subir os arquivos do app
+------------------------------------------------
+1. Na página do repositório recém-criado, clique no link
+   "uploading an existing file"
+2. Abra a pasta onde eu deixei os arquivos do app no seu PC
+   (a pasta "android_app" completa, com todas as subpastas)
+3. Selecione TODOS os arquivos e pastas dentro de "android_app"
+   e arraste pra dentro da página do GitHub (no Chrome ou Edge,
+   arrastar uma pasta inteira funciona e mantém a estrutura)
+4. Espere o upload terminar, escreva uma mensagem tipo "primeiro
+   commit" embaixo, e clique em "Commit changes"
+
+PASSO 4 — Deixar o GitHub compilar
+------------------------------------------------
+1. Na página do repositório, clique na aba "Actions" (no menu
+   de cima)
+2. Você vai ver "Build APK" rodando (ou clique em "Run workflow"
+   se não iniciar sozinho)
+3. Espere terminar (ícone fica com uma bolinha verde ✓ quando
+   completo — leva de 3 a 8 minutos)
+4. Clique em cima da execução concluída
+5. Lá embaixo, em "Artifacts", vai ter um arquivo chamado
+   "monitor-legendas-apk" — clique pra baixar (vem como .zip,
+   dentro dele está o app-debug.apk)
+
+PASSO 5 — Instalar no celular
+------------------------------------------------
+1. Extraia o .zip baixado, pegue o arquivo "app-debug.apk"
+2. Transfira ele pro celular (por e-mail pra você mesmo, Google
+   Drive, WhatsApp, cabo USB — o que for mais fácil)
+3. No celular, abra o arquivo .apk
+4. O Android vai avisar que é de "fonte desconhecida" — isso é
+   normal pra apps fora da Play Store. Toque em "Instalar assim
+   mesmo" / "Configurações" > permitir instalação dessa fonte
+5. Instale e abra o app
+
+PASSO 6 — Usar o app
+------------------------------------------------
+1. Na tela principal, digite o nome de um filme/série e toque
+   "Adicionar"
+2. Toque em "Verificar agora" pra testar imediatamente
+3. Na primeira verificação, ele só memoriza o que já existe (não
+   notifica nada ainda) — é assim mesmo, evita avisar de coisa
+   antiga
+4. Daí pra frente, ele confere sozinho a cada 30 minutos e avisa
+   por notificação quando sair algo novo da sua lista
+5. Pra remover um título, toque e segure em cima dele na lista
+
+OBSERVAÇÕES IMPORTANTES
+------------------------------------------------
+- O Android pode "matar" apps em segundo plano pra economizar
+  bateria. Se as notificações pararem de chegar depois de um
+  tempo, vá em Configurações > Bateria > Monitor de Legendas >
+  e desative a otimização de bateria pra esse app.
+- O OpenSubtitles tem proteção anti-robô forte; pode falhar às
+  vezes. Addic7ed e Subdl tendem a funcionar melhor.
+- Sempre que você quiser atualizar o app (ex: se eu corrigir
+  algo), é só repetir os passos 3 e 4 com os arquivos novos, e
+  reinstalar o novo .apk por cima do antigo no celular.
